@@ -72,7 +72,7 @@ fonttools==4.53.0
 fqdn==1.5.1
 frozenlist==1.4.1
 fsspec==2024.5.0
-future==0.18.2
+future==0.18.3
 gast==0.5.4
 google-api-core==2.19.0
 google-auth==2.30.0
