@@ -5,14 +5,14 @@ class GUI():
     def __init__(self, retriever, answer_generator):
         self.retriever = retriever
         self.answer_generator = answer_generator
-        self.name = self.get_name()
+        self.name = "dom"#self.get_name()
         self.start_chat()
 
     def get_name(self):
         def submit_name(name):
             return name
 
-        name_input = gr.inputs.Textbox(label="Enter your name")
+        name_input = gr.Textbox(label="Enter your name")
         name_interface = gr.Interface(fn=submit_name, inputs=name_input, outputs="text", live=False)
 
         result = name_interface.launch(share=False)
