@@ -7,7 +7,7 @@ def main():
     documents_path = "./PDF_FILES"
     docs = Loader(documents_path).load_documents()
     retriever = Retriever(docs).get_retriever()
-    answer_generator = AnswerGenertor(retriever)
+    answer_generator = AnswerGenerator(retriever)
     GUI(retriever,answer_generator)
     
 if __name__ == "__main__":
