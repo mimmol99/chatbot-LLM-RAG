@@ -15,6 +15,7 @@ class AnswerGenerator():
     def __init__(self,retriever,model_name = "gpt-3.5-turbo",temperature = 0):
 
         self.retriever = retriever
+        self.parent_retriever = self.retriever.get_parent_retriever()
         self.model_name = model_name
         self.model_api_key = None
 
@@ -85,7 +86,7 @@ class AnswerGenerator():
             ]
         )
 
-        history_aware_retriever = create_history_aware_retriever(self.model, self.retriever, contextualize_q_prompt)
+        history_aware_retriever = create_history_aware_retriever(self.model, self.parent_retriever, contextualize_q_prompt)
         
         rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
 

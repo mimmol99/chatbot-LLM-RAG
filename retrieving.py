@@ -7,12 +7,16 @@ from langchain_community.embeddings import HuggingFaceBgeEmbeddings
 
 
 class Retriever:
-	def __init__(self, docs):
+	def __init__(self, docs,vectorstore = None):
 		self.docs = docs
 		self.vectorstore = self.embedding()
 		self.child_splitter = RecursiveCharacterTextSplitter(chunk_size=200, chunk_overlap=25, add_start_index=True)
 		self.parent_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100, add_start_index=True)
-	
+		if vectorstore is None:
+			self.vectorstore = self.embedding()
+		else:
+			self.vectorstore = vectorstore
+			
 	def embedding(self):
 
 		#sentence_transformer_ef = SentenceTransformerEmbeddings(model_name = "all_MiniLM-L6-v2")	
@@ -29,7 +33,7 @@ class Retriever:
 		return vectorstore
 
 		
-	def get_retriever(self):
+	def get_parent_retriever(self):
 		store = InMemoryStore()
 		retriever = ParentDocumentRetriever(
     vectorstore=self.vectorstore,
