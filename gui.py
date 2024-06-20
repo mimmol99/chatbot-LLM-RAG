@@ -25,7 +25,7 @@ class GUI():
             if not user_input:
                 return None
             answer = self.answer_generator.answer_prompt(user_input, self.name)
-            return f"\n:{answer}"
+            return f"\n{answer}"
 
         interface = gr.Interface(
             fn=chat,
