@@ -3,6 +3,8 @@ from langchain_community.embeddings.sentence_transformer import SentenceTransfor
 from langchain.retrievers import ParentDocumentRetriever
 from langchain_chroma import Chroma
 from langchain.storage import InMemoryStore
+from langchain_community.embeddings import HuggingFaceBgeEmbeddings
+
 
 class Retriever:
 	def __init__(self, docs):
@@ -12,7 +14,17 @@ class Retriever:
 		self.parent_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100, add_start_index=True)
 	
 	def embedding(self):
-		sentence_transformer_ef = SentenceTransformerEmbeddings(model_name = "all_MiniLM-L6-v2")	
+
+		#sentence_transformer_ef = SentenceTransformerEmbeddings(model_name = "all_MiniLM-L6-v2")	
+		model_name = "BAAI/bge-small-en"
+		model_kwargs = {'device': 'cpu'}
+		encode_kwargs = {'normalize_embeddings': True}
+		sentence_transformer_ef  = HuggingFaceBgeEmbeddings(
+			model_name=model_name,
+			model_kwargs=model_kwargs,
+			encode_kwargs=encode_kwargs
+		)
+
 		vectorstore = Chroma(collection_name = "full_documents", embedding_function=sentence_transformer_ef)
 		return vectorstore
 

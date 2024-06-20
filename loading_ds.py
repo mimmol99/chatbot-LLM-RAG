@@ -1,5 +1,5 @@
 import os
-from pypdf import PyPDFLoader
+from langchain_community.document_loaders import PyPDFLoader
 
 
 class Loader:

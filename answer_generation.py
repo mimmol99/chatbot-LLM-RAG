@@ -1,5 +1,5 @@
 import os
-from getpass import getpass
+import getpass
 from langchain_openai import ChatOpenAI
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain.chains.combine_documents import create_stuff_documents_chain
@@ -16,16 +16,21 @@ class AnswerGenerator():
 
         self.retriever = retriever
         self.model_name = model_name
-        self.model_api_key = os.getenv("API_KEY")
-        self.model = self.initialize_model(self.model_name)
+        self.model_api_key = None
+
+        #if not os.getenv("OPENAI_API_KEY"):
+            # Prompt for the API key if it is empty
+            # os.environ["OPENAI_API_KEY"] = getpass.getpass(prompt="Enter your OpenAI API key: ")
+
         self.model_temperature = temperature
+        self.initialize_model()
         self.store = {}
-        self.rag_chain = self.create_rag_chain(self.model)
+        self.rag_chain = self.create_rag_chain()
 
     
-    def initialize_model(self,model_name):
+    def initialize_model(self):
         self.check_api_key()
-        self.model = ChatOpenAI(model=self.model_name, temperature=self.model_temperature)
+        self.model = ChatOpenAI(model=self.model_name, temperature=self.model_temperature,openai_api_key = self.model_api_key)
 
 
     def check_api_key(self):
@@ -40,7 +45,7 @@ class AnswerGenerator():
         return self.store[session_id]
     
 
-    def create_rag_chain(self,model):
+    def create_rag_chain(self):
 
         system_prompt = (
             "You are an assistant for question-answering tasks. "
@@ -61,6 +66,7 @@ class AnswerGenerator():
             ]
         )
 
+        print(type(self.model),type(qa_prompt))
         question_answer_chain = create_stuff_documents_chain(self.model, qa_prompt)
 
         contextualize_q_system_prompt = (
