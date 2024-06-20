@@ -1,12 +1,13 @@
 from loading_ds import Loader
-from retrieving import Retriever
+from Embedding import EmbeddingModel
 from answer_generation import AnswerGenerator
 from gui import GUI
+import os
 
 def main():
-    documents_path = "./PDF_FILES"
+    documents_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),"PDF_FILES")
     docs = Loader(documents_path).load_documents()
-    retriever = Retriever(docs).get_retriever()
+    retriever = EmbeddingModel(docs).get_parent_retriever()
     answer_generator = AnswerGenerator(retriever)
     GUI(retriever,answer_generator)
     

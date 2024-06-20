@@ -17,11 +17,6 @@ class AnswerGenerator():
         self.retriever = retriever
         self.model_name = model_name
         self.model_api_key = None
-
-        #if not os.getenv("OPENAI_API_KEY"):
-            # Prompt for the API key if it is empty
-            # os.environ["OPENAI_API_KEY"] = getpass.getpass(prompt="Enter your OpenAI API key: ")
-
         self.model_temperature = temperature
         self.initialize_model()
         self.store = {}
@@ -29,17 +24,20 @@ class AnswerGenerator():
 
     
     def initialize_model(self):
+
         self.check_api_key()
         self.model = ChatOpenAI(model=self.model_name, temperature=self.model_temperature,openai_api_key = self.model_api_key)
 
 
     def check_api_key(self):
+
         if not self.model_api_key:
             # Prompt for the API key if it is empty
             self.model_api_key = getpass.getpass(prompt="Enter your model API key: ")
 
 
     def get_session_history(self,session_id: str) -> BaseChatMessageHistory:
+        
         if session_id not in self.store:
             self.store[session_id] = ChatMessageHistory()
         return self.store[session_id]
