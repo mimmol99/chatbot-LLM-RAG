@@ -98,11 +98,10 @@ class AnswerGenerator():
         return conversational_rag_chain
     
 
-    def answer_prompt(self,user_prompt,session_id):
+    def answer_prompt(self,user_prompt,session_id = "123"):
         dict_answer = self.rag_chain.invoke({"input":user_prompt},config={"configurable": {"session_id": session_id}})
         return dict_answer['answer']
     
-
     def get_rag_chain(self):
         return self.rag_chain
 
