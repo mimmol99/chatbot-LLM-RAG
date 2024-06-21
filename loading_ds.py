@@ -6,46 +6,46 @@ from langchain_core.prompts import PromptTemplate
 import getpass
 from langchain_openai import ChatOpenAI
 from langchain.chains.summarize import load_summarize_chain
+#from langchain_community.document_loaders.parsers.pdf import PDFMinerParser
+from langchain_core.runnables.base import RunnableSequence
+from langchain_core.output_parsers.json import SimpleJsonOutputParser
 
 class Loader:
-    def __init__(self, pdf_directory, model):
-        self.pdf_directory = pdf_directory
+
+
+    def __init__(self, file_directory):
+    
+        self.file_directory = file_directory
         self.all_docs = []
-        self.model = None
-        self.model_api_key = None
+        if "OPENAI_API_KEY" not in os.environ:
+            os.environ["OPENAI_API_KEY"] = getpass.getpass("Enter OPENAI_API_KEY")
+        self.model_api_key = os.environ["OPENAI_API_KEY"]
+        self.model = ChatOpenAI(model="gpt-4o", temperature=0,openai_api_key = self.model_api_key)
+        
 
     def load_documents(self):
-        for filename in os.listdir(self.pdf_directory):
+    
+        for filename in os.listdir(self.file_directory):
             if filename.endswith(".pdf"):
-                pdfloader = PyPDFLoader(os.path.join(self.pdf_directory, filename))
+                pdfloader = PyPDFLoader(os.path.join(self.file_directory, filename))
                 docs = pdfloader.load()
                 s_docs = self.summarization(docs)
                 self.all_docs.extend(docs)
         return self.all_docs
 
+
     def summarization(self,docs):
-        if not self.model_api_key:
-            # Prompt for the API key if it is empty
-            self.model_api_key = getpass.getpass(prompt="Enter your model API key: ")
-        if not self.model:
-            self.model = ChatOpenAI(model="gpt-4o", temperature=0,openai_api_key = self.model_api_key)
-         # Define prompt
+
+        # Define prompt
         prompt_template = """Write a detailed summary,considering every section, of the following document:
         "{text}"
         SUMMARY:"""
         prompt = PromptTemplate.from_template(prompt_template)
-
+        
         llm_chain = LLMChain(llm=self.model, prompt=prompt)
 
-        #Define RefineChain
-        #refine_chain = load_summarize_chain(self.model, chain_type="refine")
-
-        # Define StuffDocumentsChain
         stuff_chain = StuffDocumentsChain(llm_chain=llm_chain, document_variable_name="text")
-       
-
         s_dc = stuff_chain.invoke(docs)["output_text"]
-        print(s_dc)
 
         return s_dc
 

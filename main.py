@@ -5,9 +5,8 @@ from gui import GUI
 import os
 
 def main():
-    documents_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),"PDF_FILES")
-    model = None
-    docs = Loader(documents_path,model).load_documents()
+    files_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),"FILES")
+    docs = Loader(files_path).load_documents()
     retriever = EmbeddingModel(docs).get_parent_retriever()
     answer_generator = AnswerGenerator(retriever)
     GUI(retriever,answer_generator)
