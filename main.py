@@ -6,7 +6,8 @@ import os
 
 def main():
     documents_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),"PDF_FILES")
-    docs = Loader(documents_path).load_documents()
+    model = None
+    docs = Loader(documents_path,model).load_documents()
     retriever = EmbeddingModel(docs).get_parent_retriever()
     answer_generator = AnswerGenerator(retriever)
     GUI(retriever,answer_generator)
