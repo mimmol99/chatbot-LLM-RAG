@@ -16,7 +16,14 @@ class AnswerGenerator():
 
         self.retriever = retriever
         self.model_name = model_name
-        self.model_api_key = None
+        
+        if "OPENAI_API_KEY" not in os.environ:
+
+            os.environ["OPENAI_API_KEY"] = getpass.getpass("Enter OPENAI_API_KEY")
+            
+        self.model_api_key = os.environ["OPENAI_API_KEY"]
+
+            
         self.model_temperature = temperature
         self.initialize_model()
         self.store = {}
