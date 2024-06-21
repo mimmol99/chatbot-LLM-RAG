@@ -37,16 +37,21 @@ class Loader:
 
         llm_chain = LLMChain(llm=self.model, prompt=prompt)
 
+        #Define RefineChain
+        #refine_chain = load_summarize_chain(self.model, chain_type="refine")
 
         # Define StuffDocumentsChain
         stuff_chain = StuffDocumentsChain(llm_chain=llm_chain, document_variable_name="text")
        
 
         s_dc = stuff_chain.invoke(docs)["output_text"]
-
+        print(s_dc)
 
         return s_dc
 
 
+  
+       
 
-
+    
+      
