@@ -12,7 +12,6 @@ class Loader:
             if filename.endswith(".pdf"):
                 pdfloader = PyPDFLoader(os.path.join(self.pdf_directory, filename))
                 docs = pdfloader.load()
-                print(len(docs),docs)
                 self.all_docs.extend(docs)
         return self.all_docs
 

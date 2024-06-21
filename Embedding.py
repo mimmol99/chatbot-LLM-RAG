@@ -46,7 +46,7 @@ class EmbeddingModel:
 	def get_vectore_store(self):
 		return self.vectorstore
 	
-
+	
 	def get_sentence_transformer_ef(self):
 		return self.sentence_transformer_ef
 
