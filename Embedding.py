@@ -9,24 +9,24 @@ from langchain_community.embeddings import HuggingFaceBgeEmbeddings
 class EmbeddingModel:
 	def __init__(self, docs):
 		self.docs = docs
-		self.vectorstore = self.embedding()
+		self.vectorstore = self.create_vector_store()
 		self.child_splitter = RecursiveCharacterTextSplitter(chunk_size=200, chunk_overlap=25, add_start_index=True)
 		self.parent_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100, add_start_index=True)
 	
-	def embedding(self):
+	def create_vector_store(self):
 
 		#sentence_transformer_ef = SentenceTransformerEmbeddings(model_name = "all_MiniLM-L6-v2")	
 		model_name = "BAAI/bge-small-en"
 		model_kwargs = {'device': 'cpu'}
 		encode_kwargs = {'normalize_embeddings': True}
-		sentence_transformer_ef  = HuggingFaceBgeEmbeddings(
+		self.sentence_transformer_ef  = HuggingFaceBgeEmbeddings(
 			model_name=model_name,
 			model_kwargs=model_kwargs,
 			encode_kwargs=encode_kwargs
 		)
 
-		vectorstore = Chroma(collection_name = "full_documents", embedding_function=sentence_transformer_ef)
-		return vectorstore
+		self.vectorstore = Chroma(collection_name = "full_documents", embedding_function=self.sentence_transformer_ef)
+		return self.vectorstore
 
 		
 	def get_parent_retriever(self):
@@ -41,6 +41,14 @@ class EmbeddingModel:
 		retriever.add_documents(self.docs)
 
 		return retriever
+	
+
+	def get_vectore_store(self):
+		return self.vectorstore
+	
+
+	def get_sentence_transformer_ef(self):
+		return self.sentence_transformer_ef
 
 
 		
