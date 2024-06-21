@@ -12,13 +12,13 @@ An example of chat bot LLM-RAG architecture:
 In particular in this repository has been used:
 
 - PyPDFLoader to load PDF files and transform in Document objects //
-   enable files upload for each user? store files in local or cloud? saving the loaded files? adding/removing files?
+   which other files can be used(txt,word,webpage,images)?enable files upload for each user? store files in local or cloud? saving the loaded files? adding/removing files?
 - RecursiveCharacterTextSplitter for documents splitting
 - HuggingFaceBgeEMbeddings for documents embedding
 - Chroma for vector storing //
   local or cloud database? store every chat history?
 - ParentDocumentRetriever to retrieve child and parent chunks using similarity
 - chatgpt3.5 turbo as LLM //
-  free/opensource models?fine tuning?efficiency?speed?cost?
+  free/opensource models?fine tuning?efficiency?speed?cost? model able to read images?mobel able to generate images?
 - RunnableWithMessageHistory to make the LLM chat history aware
 
