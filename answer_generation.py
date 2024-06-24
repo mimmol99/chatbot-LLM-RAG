@@ -109,8 +109,13 @@ class AnswerGenerator():
         dict_answer = self.rag_chain.invoke({"input":user_prompt},config={"configurable": {"session_id": session_id}})
         return dict_answer['answer']
     
+
     def get_rag_chain(self):
         return self.rag_chain
+    
+    
+    def get_retriever(self):
+        return self.retriever
 
 
 

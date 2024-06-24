@@ -5,12 +5,14 @@ import openai
 from langchain.chains import RetrievalQA
 from langchain_community.chat_models import ChatOpenAI
 import os
-
+import tempfile
 from loading_ds import Loader
 from Embedding import EmbeddingModel
 from langchain_community.document_loaders import PyPDFLoader
 from answer_generation import AnswerGenerator
-
+from dotenv import load_dotenv, find_dotenv
+from pathlib import Path
+load_dotenv(Path("./api_key.env"))
 
 # Set the title for the Streamlit app
 st.title("RAG enhanced Chatbot")
@@ -24,16 +26,20 @@ if api_key:
 # Cached function to create a vectordb for the provided PDF files
 
 @st.cache_data
-def pdf_to_docs(files):
-    all_docs = []
-    for f in files:
-        temp_file = "./temp.pdf"
-        with open(temp_file, "wb") as file:
-            file.write(f.getvalue())
-        pdfloader = PyPDFLoader(temp_file)
-        docs = pdfloader.load()
-        all_docs.extend(docs)
-    return all_docs
+def files_to_docs(files):
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        for file in files:
+            file_path = os.path.join(temp_dir, file.name)
+            with open(file_path, "wb") as f:
+                f.write(file.getbuffer())
+            
+        loader = Loader(temp_dir)
+        docs = loader.load_documents()
+        #docs = loader.summarize_docs(docs)
+    
+    return docs
+
 
 
 @st.cache_data
@@ -41,11 +47,11 @@ def answer_gen(_docs):
     st.session_state['answer_generator'] = AnswerGenerator(EmbeddingModel(_docs).get_parent_retriever())
 
 
-pdf_files = st.file_uploader("", type="pdf", accept_multiple_files=True)
+files = st.file_uploader("", type= ["pdf","doc","docx","txt","word"], accept_multiple_files=True)
 
-if pdf_files:
+if files:
     # Convert uploaded files to a list of file names and their sizes
-    current_files_info = [(f.name, f.size) for f in pdf_files]
+    current_files_info = [(f.name, f.size) for f in files]
 
     # Get the previously processed files info from session state
     previous_files_info = st.session_state.get("previous_files_info", None)
@@ -54,8 +60,8 @@ if pdf_files:
     if current_files_info != previous_files_info:
         processing_placeholder = st.empty()
         with processing_placeholder.container():
-            with st.spinner(f"Processing {len(pdf_files)} pdf(s)..."):
-                docs = pdf_to_docs(pdf_files)
+            with st.spinner(f"Processing {len(files)} file(s)..."):
+                docs = files_to_docs(files)
                 answer_gen(docs)
                 st.session_state["vectordb"] = EmbeddingModel(docs).create_vector_store()
         processing_placeholder.empty()
@@ -113,4 +119,3 @@ else:
         if message["role"] not in ["system"]:
             with st.chat_message(message["role"]):
                 st.write(message["content"])
-
