@@ -14,10 +14,9 @@ def main():
     urls = ["https://ainews.it/synthesia-creazione-di-avatar-ai-anche-da-mobile/"]
     loader = Loader(files_path)
     docs_urls = loader.load_urls(urls)
-    
-    docs = loader.load_documents_parallel()
+    docs = loader.load_documents()
     docs.extend(docs_urls)
-    #summarized_docs = loader.summarize_docs(docs)
+    summarized_docs = loader.summarize_docs(docs)
     parent_retriever = EmbeddingModel(docs).get_parent_retriever()
     answer_generator = AnswerGenerator(parent_retriever)
     GUI(answer_generator)

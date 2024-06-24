@@ -119,4 +119,3 @@ else:
         if message["role"] not in ["system"]:
             with st.chat_message(message["role"]):
                 st.write(message["content"])
-

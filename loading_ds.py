@@ -87,7 +87,6 @@ class Loader:
         summarized_docs = []
         for doc in docs:
             summarized_docs.append(self.summarize_doc(doc))
-            #summarized_docs.append(doc)
         return summarized_docs
 
 
