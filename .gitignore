@@ -2,3 +2,4 @@
 # *.pdf
 *.env
 # *.env
+api_key.env
