@@ -10,11 +10,15 @@ load_dotenv(Path("./api_key.env"))
 
 def main():
     
-    files_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),"FILES_RED")
+    files_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),"FILES")
+    urls = ["https://ainews.it/synthesia-creazione-di-avatar-ai-anche-da-mobile/"]
     loader = Loader(files_path)
-    docs = loader.load_documents()
-    summarized_docs = loader.summarize_docs(docs)
-    parent_retriever = EmbeddingModel(summarized_docs).get_parent_retriever()
+    docs_urls = loader.load_urls(urls)
+    
+    docs = loader.load_documents_parallel()
+    docs.extend(docs_urls)
+    #summarized_docs = loader.summarize_docs(docs)
+    parent_retriever = EmbeddingModel(docs).get_parent_retriever()
     answer_generator = AnswerGenerator(parent_retriever)
     GUI(answer_generator)
     

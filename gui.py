@@ -27,7 +27,7 @@ class GUI():
             user_input = inp
             if not user_input:
                 return None
-            answer = self.answer_generator.answer_prompt(user_input, self.name)
+            answer = self.answer_generator.answer_prompt(user_input)
             return f"\n{answer}"
 
         interface = gr.Interface(

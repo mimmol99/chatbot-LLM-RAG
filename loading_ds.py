@@ -7,6 +7,7 @@ import getpass
 from langchain_openai import ChatOpenAI
 from langchain_core.runnables.base import RunnableSequence
 from langchain_core.output_parsers.json import SimpleJsonOutputParser
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from langchain_community.document_loaders import DirectoryLoader
 from langchain_core.documents import Document
@@ -34,12 +35,37 @@ class Loader:
         
 
     def load_documents(self):
-        loader = DirectoryLoader(self.file_directory, glob="**/*.*", use_multithreading = True,show_progress=True)
-        docs = loader.load()
+        # Use a list of patterns to match specific file types
+        patterns = ["**/*.html","**/*.pdf", "**/*.txt", "**/*.doc", "**/*.docx", "**/*.word", "**/*.pptx"]
+        docs = []
+        for pattern in patterns:
+            loader = DirectoryLoader(self.file_directory, glob=pattern, use_multithreading=True, show_progress=True)
+            docs.extend(loader.load())
         return docs
     
+    def load_documents_parallel(self):
+        # Use a list of patterns to match specific file types
+        patterns = ["**/*.html", "**/*.pdf", "**/*.txt", "**/*.doc", "**/*.docx", "**/*.word", "**/*.pptx"]
+        docs = []
+        
+        # Function to load documents for a given pattern
+        def load_pattern(pattern):
+            loader = DirectoryLoader(self.file_directory, glob=pattern, use_multithreading=True, show_progress=True)
+            return loader.load()
 
-    def is_string_an_url(url_string: str) -> bool:
+        # Use ThreadPoolExecutor to load documents in parallel
+        with ThreadPoolExecutor() as executor:
+            future_to_pattern = {executor.submit(load_pattern, pattern): pattern for pattern in patterns}
+            for future in as_completed(future_to_pattern):
+                pattern = future_to_pattern[future]
+                try:
+                    docs.extend(future.result())
+                except Exception as e:
+                    print(f"Error loading pattern {pattern}: {e}")
+
+        return docs
+
+    def is_string_an_url(self,url_string: str) -> bool:
             result = validators.url(url_string)
             if result is not True:
                 return False
@@ -51,6 +77,10 @@ class Loader:
         loader = WebBaseLoader(urls)
         docs = loader.load()
         return docs
+    
+
+    def load_htmls(self,htmls):
+        laoder = UnstructuredHTMLLoader(htmls,mode = 'single')
     
 
     def summarize_docs(self,docs):

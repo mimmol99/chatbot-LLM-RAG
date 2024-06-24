@@ -36,7 +36,6 @@ def files_to_docs(files):
             
         loader = Loader(temp_dir)
         docs = loader.load_documents()
-        print(len(docs))
         #docs = loader.summarize_docs(docs)
     
     return docs
@@ -48,7 +47,7 @@ def answer_gen(_docs):
     st.session_state['answer_generator'] = AnswerGenerator(EmbeddingModel(_docs).get_parent_retriever())
 
 
-files = st.file_uploader("", type= ["pdf","doc","docx","txt"], accept_multiple_files=True)
+files = st.file_uploader("", type= ["pdf","doc","docx","txt","word"], accept_multiple_files=True)
 
 if files:
     # Convert uploaded files to a list of file names and their sizes
