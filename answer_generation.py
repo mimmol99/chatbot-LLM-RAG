@@ -42,6 +42,10 @@ class AnswerGenerator():
 
         self.check_api_key()
         self.model = ChatOpenAI(model=self.model_name, temperature=self.model_temperature,openai_api_key = self.model_api_key)
+        """
+          self.model = ChatGroq(model=self.model_name, temperature=self.model_temperature,api_key = self.model_api_key)
+
+        """
 
 
     def check_api_key(self):
@@ -79,7 +83,7 @@ class AnswerGenerator():
             ]
         )
 
-        print(type(self.model),type(qa_prompt))
+
         question_answer_chain = create_stuff_documents_chain(self.model, qa_prompt)
 
         contextualize_q_system_prompt = (
