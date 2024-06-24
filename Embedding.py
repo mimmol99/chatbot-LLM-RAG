@@ -30,6 +30,7 @@ class EmbeddingModel:
 
 		
 	def get_parent_retriever(self):
+		
 		store = InMemoryStore()
 		retriever = ParentDocumentRetriever(
 			vectorstore=self.vectorstore,
@@ -37,9 +38,8 @@ class EmbeddingModel:
 			child_splitter=self.child_splitter,
 			parent_splitter=self.parent_splitter,
 		)
-
+		
 		retriever.add_documents(self.docs)
-
 		return retriever
 	
 

@@ -2,11 +2,13 @@ import gradio as gr
 
 class GUI():
 
-    def __init__(self, retriever, answer_generator):
-        self.retriever = retriever
+
+    def __init__(self,answer_generator):
+
+        self.retriever = answer_generator.get_retriever()
         self.answer_generator = answer_generator
-        self.name = "dom"#self.get_name()
         self.start_chat()
+
 
     def get_name(self):
         def submit_name(name):
@@ -17,6 +19,7 @@ class GUI():
 
         result = name_interface.launch(share=False)
         return result
+
 
     def start_chat(self):
 
