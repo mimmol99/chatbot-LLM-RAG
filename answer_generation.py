@@ -11,7 +11,7 @@ from langchain_community.chat_message_histories import ChatMessageHistory
 
 class AnswerGenerator():
 
-
+    """ def __init__(self,retriever,model_name = "llama3-70b-8192",temperature = 0):"""
     def __init__(self,retriever,model_name = "gpt-3.5-turbo",temperature = 0):
 
         self.retriever = retriever
@@ -22,6 +22,14 @@ class AnswerGenerator():
             os.environ["OPENAI_API_KEY"] = getpass.getpass("Enter OPENAI_API_KEY")
             
         self.model_api_key = os.environ["OPENAI_API_KEY"]
+        
+        """
+        if "GROQ_KEY" not in os.environ:
+
+            os.environ["GROK_KEY"] = getpass.getpass("Enter GROQ_KEY")
+            
+        self.model_api_key = os.environ["GROK_KEY"]        
+        """
 
             
         self.model_temperature = temperature
