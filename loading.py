@@ -36,10 +36,9 @@ class Loader:
     def load_documents(self,accepted_files):
         # Use a list of patterns to match specific file types
         patterns = ["**/*."+f for f in accepted_files]
-        #patterns = ["**/*.html","**/*.pdf", "**/*.txt", "**/*.doc", "**/*.docx", "**/*.word", "**/*.pptx"]
         docs = []
         for pattern in patterns:
-            loader = DirectoryLoader(self.file_directory, glob=pattern, use_multithreading=True, show_progress=True)
+            loader = DirectoryLoader(self.file_directory, glob=pattern, use_multithreading=True, show_progress=False)
             docs.extend(loader.load())
         return docs
     

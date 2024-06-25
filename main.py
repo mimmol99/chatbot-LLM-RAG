@@ -14,11 +14,11 @@ load_dotenv(Path("./api_key.env"))
 
 def main():
     parser = argparse.ArgumentParser(description="Choose model, embeddings, retriever, and other options.")
-    parser.add_argument('--model', choices=['openai', 'groq', 'claude'], required=True, help="Choose the model to use.")
-    parser.add_argument('--embeddings', choices=['openai', 'hugging', 'fast'], required=True, help="Choose the embeddings to use.")
-    parser.add_argument('--retriever', choices=['base', 'parent', 'comp_extract', 'comp_filter', 'comp_emb'], required=True, help="Choose the retriever to use.")
-    parser.add_argument('--files_path', type=str, required=True, help="Path to the directory containing files.")
-    parser.add_argument('--pre_summarize', action='store_true', help="Whether to pre-summarize the documents.")
+    parser.add_argument('--model', choices=['openai', 'groq', 'claude'], default='openai', help="Choose the model to use (default: openai).")
+    parser.add_argument('--embeddings', choices=['openai', 'hugging', 'fast'], default='fast', help="Choose the embeddings to use (default: fast).")
+    parser.add_argument('--retriever', choices=['base', 'parent', 'comp_extract', 'comp_filter', 'comp_emb'], default='comp_emb', help="Choose the retriever to use (default: comp_emb).")
+    parser.add_argument('--files_path', type=str, required=True, help="Path to the directory containing files to be retrieved.")
+    parser.add_argument('--pre_summarize', action='store_true', help="Whether to pre-summarize the documents (default: False).")
     
     args = parser.parse_args()
 
@@ -37,6 +37,7 @@ def main():
     loader = Loader(files_path)
     docs_urls = loader.load_urls(urls)
     docs = loader.load_documents(accepted_files)
+    print(docs)
     docs.extend(docs_urls)
 
     # Optionally pre-summarize documents
@@ -63,13 +64,16 @@ def main():
     elif args.retriever == 'parent':
         chosen_retriever = ParentRetriever(docs, vectorstore).get_retriever()
     elif args.retriever == 'comp_extract':
-        chosen_retriever = CompressionExtractorRetriever(chosen_retriever, model).get_retriever()
+        base_retriever = Retriever(docs, embedding_function).get_retriever()
+        chosen_retriever = CompressionExtractorRetriever(base_retriever, model).get_retriever()
     elif args.retriever == 'comp_filter':
-        chosen_retriever = CompressionFilterRetriever(chosen_retriever, model).get_retriever()
+        base_retriever = Retriever(docs, embedding_function).get_retriever()
+        chosen_retriever = CompressionFilterRetriever(base_retriever, model).get_retriever()
     elif args.retriever == 'comp_emb':
-        chosen_retriever = CompressionEmbeddingRetriever(chosen_retriever, docs=docs, embedding_function=embedding_function).get_retriever()
+        base_retriever = Retriever(docs, embedding_function).get_retriever()
+        chosen_retriever = CompressionEmbeddingRetriever(base_retriever, docs=docs, embedding_function=embedding_function).get_retriever()
 
-    answer_generator = AnswerGenerator(chosen_retriever)
+    answer_generator = AnswerGenerator(retriever= chosen_retriever,model = model)
     GUI(answer_generator)
     
 if __name__ == "__main__":

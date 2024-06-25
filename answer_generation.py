@@ -12,48 +12,18 @@ from langchain_groq import ChatGroq
 class AnswerGenerator():
 
     """ def __init__(self,retriever,model_name = "llama3-70b-8192",temperature = 0):"""
-    def __init__(self,retriever,model_name = "gpt-3.5-turbo",temperature = 0):
+    def __init__(self,retriever,model):
 
         self.retriever = retriever
-        self.model_name = model_name
-        
-        if "OPENAI_API_KEY" not in os.environ:
-
-            os.environ["OPENAI_API_KEY"] = getpass.getpass("Enter OPENAI_API_KEY")
-            
-        self.model_api_key = os.environ["OPENAI_API_KEY"]
-        
-        """
-        if "GROQ_KEY" not in os.environ:
-
-            os.environ["GROK_KEY"] = getpass.getpass("Enter GROQ_KEY")
-            
-        self.model_api_key = os.environ["GROK_KEY"]        
-        """
-
-            
-        self.model_temperature = temperature
-        self.initialize_model()
+        self.model = model
         self.store = {}
         self.rag_chain = self.create_rag_chain()
 
+
+
+    def get_store(self):
+        return self.store
     
-    def initialize_model(self):
-
-        self.check_api_key()
-        self.model = ChatOpenAI(model=self.model_name, temperature=self.model_temperature,openai_api_key = self.model_api_key)
-        """
-          self.model = ChatGroq(model=self.model_name, temperature=self.model_temperature,api_key = self.model_api_key)
-
-        """
-
-
-    def check_api_key(self):
-
-        if not self.model_api_key:
-            # Prompt for the API key if it is empty
-            self.model_api_key = getpass.getpass(prompt="Enter your model API key: ")
-
 
     def get_session_history(self,session_id: str) -> BaseChatMessageHistory:
         

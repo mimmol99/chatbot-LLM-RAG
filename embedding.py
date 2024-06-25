@@ -37,7 +37,7 @@ class EmbeddingModel:
 	def create_vector_store(self,docs,sentence_transformer_ef):
 		self.vectorstore = Chroma.from_documents(documents=docs,embedding =sentence_transformer_ef)
 
-	def get_vectore_store(self):
+	def get_vector_store(self):
 		return self.vectorstore
 	
 	def get_sentence_transformer_ef(self):

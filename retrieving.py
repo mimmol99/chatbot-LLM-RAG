@@ -29,7 +29,7 @@ class Retriever:
 
 class ParentRetriever:
 
-    def __init__(self, docs, vectorstore, parent_splitter=RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100, add_start_index=True), child_splitter=RecursiveCharacterTextSplitter(chunk_size=200, chunk_overlap=25, add_start_index=True)):
+    def __init__(self, docs, vectorstore, parent_splitter=RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=125, add_start_index=True), child_splitter=RecursiveCharacterTextSplitter(chunk_size=100, chunk_overlap=25, add_start_index=True)):
         self.docs = docs
         self.vectorstore = vectorstore
         self.child_splitter = parent_splitter
