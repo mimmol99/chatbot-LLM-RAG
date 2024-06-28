@@ -2,34 +2,23 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 from langchain.retrievers import ParentDocumentRetriever, ContextualCompressionRetriever
 from langchain.retrievers.document_compressors import LLMChainExtractor, EmbeddingsFilter
-from langchain_chroma import Chroma
 from langchain.storage import InMemoryStore
-from langchain_community.embeddings import HuggingFaceBgeEmbeddings
-from langchain_community.vectorstores import FAISS
-from langchain.retrievers.multi_vector import MultiVectorRetriever
-from langchain.storage import InMemoryByteStore
-from langchain_openai import OpenAI, OpenAIEmbeddings
 from langchain.retrievers.document_compressors import LLMChainFilter
-from langchain_core.embeddings.embeddings import Embeddings
+from langchain.retrievers.multi_query import MultiQueryRetriever
 
-import uuid
+#check compliance between base retriever and compression retrievers
+class BaseRetriever:
 
-class Retriever:
-
-    def __init__(self, docs, embedding_function, splitter=RecursiveCharacterTextSplitter(chunk_size=200, chunk_overlap=25, add_start_index=True)):
-        self.docs = docs
-        self.embedding_function = embedding_function
-        self.splitter = splitter
+    def __init__(self,vectorstore):
+        self.vectorstore = vectorstore
 
     def get_retriever(self):
-        texts = self.splitter.split_documents(self.docs)
-        db = Chroma.from_documents(self.docs, self.embedding_function)
-        retriever = db.as_retriever()
+        retriever = self.vectorstore.as_retriever(search_type="similarity", search_kwargs={'k': 5})
         return retriever
-
+    
 class ParentRetriever:
 
-    def __init__(self, docs, vectorstore, parent_splitter=RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=125, add_start_index=True), child_splitter=RecursiveCharacterTextSplitter(chunk_size=100, chunk_overlap=25, add_start_index=True)):
+    def __init__(self, docs, vectorstore, parent_splitter=RecursiveCharacterTextSplitter(chunk_size=300, chunk_overlap=75, add_start_index=True), child_splitter=RecursiveCharacterTextSplitter(chunk_size=60, chunk_overlap=15, add_start_index=True)):
         self.docs = docs
         self.vectorstore = vectorstore
         self.child_splitter = parent_splitter
@@ -48,6 +37,22 @@ class ParentRetriever:
         retriever.add_documents(docs)
         return retriever
 
+class MultiQueryDataRetriever(BaseRetriever):
+
+    def __init__(self, base_retriever,model):
+        self.base_retriever = base_retriever
+        self.model = model
+
+    def get_multi_retriever(self):
+        llm = self.model
+        self.retriever = MultiQueryRetriever.from_llm(
+            retriever=self.base_retriever, llm=llm
+        )
+        return self.retriever
+    
+    def get_retriever(self):
+        return self.get_multi_retriever()
+    
 class CompressionExtractorRetriever:
 
     def __init__(self, base_retriever,model):
@@ -57,7 +62,7 @@ class CompressionExtractorRetriever:
     def get_compression_retriever(self):
         llm = self.model
         compressor = LLMChainExtractor.from_llm(llm)
-        self.retriever = compression_retriever = ContextualCompressionRetriever(
+        self.retriever = ContextualCompressionRetriever(
             base_compressor=compressor, base_retriever=self.base_retriever
         )
         return self.retriever
@@ -84,10 +89,8 @@ class CompressionFilterRetriever:
 
 class CompressionEmbeddingRetriever:
 
-    def __init__(self, base_retriever,docs,embedding_function):
+    def __init__(self, base_retriever,embedding_function):
         self.embedding_function = embedding_function
-        self.db = Chroma.from_documents(docs,self.embedding_function)
-        self.embeddings = self.embedding_function.embed_documents([d.page_content for d in docs])
         self.base_retriever = base_retriever
 
     def get_compression_embedding_retriever(self):
