@@ -51,7 +51,7 @@ def main():
     parser.add_argument('--pre_summarize', action='store_true', default=False, help="Whether to pre-summarize the documents (default: False).")
     parser.add_argument('--vectorstore', choices=['chroma', 'qdrant','google'], default='qdrant', help="Choose the vector store to use (default: qdrant).")
     parser.add_argument('--model_name', type=str, default=default_model_name, help="Model name based on the chosen model.")
-    parser.add_argument('--splitter', choices=['recursive', 'semantic'], default='recursive', help="Choose the text splitter to use (default: recursive).")
+    parser.add_argument('--splitter', choices=['recursive', 'semantic'], default='semantic', help="Choose the text splitter to use (default: recursive).")
 
     # Parse all args including the remaining args
     args = parser.parse_args(remaining_args)
