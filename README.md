@@ -8,7 +8,12 @@ An example of chat bot LLM-RAG architecture:
 
 ![alt text](https://github.com/DLfrontiere/chatbot-LLM-RAG/blob/main/images/rag-chatbot-architecture-1.png?raw=true)
 
-In particular in main.py is possible to load the following args:
+# Usage  Example
+```python 
+python3 main.py --model openai --model_name gpt-4o --embeddings fast --retriever parent --files_path ./your_files_dir --pre_summarize False --vectorstore qdrant --splitter semantic
+```
+
+In particular main.py accepts the following args:
 
 - Load different types of files [pdf,txt,word,doc,html,docx] to be retrieved (use --file_path to specify the path within the files and modify accepted files variable to filter)
 - Load different urls to be retrieved (variable inside code).
@@ -20,12 +25,6 @@ In particular in main.py is possible to load the following args:
 - Choose the vectorstore (--vectorstore) [qdrant,chroma,google].
 - Choose a retriever using --retriever between base retriever(vectorstore),parent document retriever,multi query retriever and three type of ContextualCompressionRetriever(compressor,extractor,filter).
 - The chatbot is chat history aware,
-
-
-# Usage  Example
-```python 
-python3 main.py --model openai --model_name gpt-4o --embeddings fast --retriever parent --files_path ./your_files_dir --pre_summarize False --vectorstore qdrant --splitter semantic
-```
 
 The only one with no defualt value is file_path
 
